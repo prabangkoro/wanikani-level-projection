@@ -180,7 +180,7 @@
 import Axios from 'axios'
 
 const MAX_LEVEL = 60
-const FAST_LEVEL = [43, 44, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+const FAST_LEVEL = [1, 2, 3, 43, 44, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
 
 export default {
   name: 'App',
