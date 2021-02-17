@@ -144,7 +144,7 @@
             <tbody>
               <tr
                 v-for="(item, index) in forecast.levelProgressions"
-                :key="item.level"
+                :key="index"
                 :class="{
                   'font-weight-bold blue lighten-5': item.current,
                 }"
@@ -284,8 +284,8 @@ export default {
     },
     initLevelProgress (data) {
       const initProgress = data.map(i => {
-        const unlockedAt = new Date(i.unlocked_at)
-        const passedAt = new Date(i.passed_at)
+        const unlockedAt = new Date(i.created_at)
+        const passedAt = new Date(i.passed_at ? i.passed_at : i.abandoned_at)
         const diff = new Date(passedAt.getTime() === 0 ? 0 : Math.abs(unlockedAt.getTime() - passedAt.getTime()))
 
         return {
@@ -317,13 +317,14 @@ export default {
       }
 
       // after current level forecast
-      for (var i = currentLevelProgression.level + 1; i <= MAX_LEVEL; i++) {
-        const unlockedAt = levelProgressions[i - 2].passedAt
-        const speed = FAST_LEVEL.includes(i) ? data.fastSpeed : data.normalSpeed 
+      for (var i = levelProgressions.length; levelProgressions[i - 1].level < MAX_LEVEL; i++) {
+        const level = levelProgressions[levelProgressions.length - 1].level + 1
+        const unlockedAt = levelProgressions[i - 1].passedAt
+        const speed = FAST_LEVEL.includes(level) ? data.fastSpeed : data.normalSpeed 
         const passedAt = new Date(unlockedAt.getTime() + speed.getTime())
 
         levelProgressions.push({
-          level: i,
+          level,
           unlockedAt,
           passedAt,
           diff: speed,
