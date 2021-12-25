@@ -318,17 +318,25 @@ export default {
       const currentLevelProgression = levelProgressions[levelProgressions.length - 1]
       if (currentLevelProgression.diff.getTime() !== 0) return levelProgressions
 
-      const speed = FAST_LEVEL.includes(currentLevelProgression.level) ? data.fastSpeed : data.normalSpeed
+      let actualSpeed = FAST_LEVEL.includes(currentLevelProgression.level) ? data.fastSpeed : data.normalSpeed
+      let passedAt = new Date(this.modHour(currentLevelProgression.unlockedAt.getTime() + actualSpeed.getTime()))
+      const now = new Date()
+      if (passedAt < now) {
+        actualSpeed = new Date(now - this.modHour(currentLevelProgression.unlockedAt.getTime()))
+        passedAt = new Date(this.modHour(now))
+      }
 
       // current level forecast
       levelProgressions[levelProgressions.length - 1] = {
         ...levelProgressions[levelProgressions.length - 1],
-        passedAt: new Date(this.modHour(currentLevelProgression.unlockedAt.getTime() + speed.getTime())),
-        diff: speed,
+        passedAt,
+        diff: actualSpeed,
         current: true
       }
 
       // after current level forecast
+      // forecast speed
+      let speed = FAST_LEVEL.includes(currentLevelProgression.level) ? data.fastSpeed : data.normalSpeed
       for (var i = levelProgressions.length; levelProgressions[i - 1].level < MAX_LEVEL; i++) {
         const level = levelProgressions[levelProgressions.length - 1].level + 1
         const unlockedAt = levelProgressions[i - 1].passedAt
