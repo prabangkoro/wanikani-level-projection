@@ -19,92 +19,104 @@
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-text-field
-                v-model="apiKey"
-                class="mt-2"
-                label="API Token v2"
-                outlined
-                clearable
-                dense
-              ></v-text-field>
-
-              <div
-                class="text-h6 mb-2"
-              >
-                Normal Level
-              </div>
-              <div class="subtitle-2 mb-2">
-                Fastest: 6d 20h
-              </div>
-              <div class="d-flex">
+              <v-form ref="form">
                 <v-text-field
-                  v-model="normalLevelDay"
-                  :rules="[rules.required, rules.number]"
-                  class="pr-2"
-                  label="Days"
+                  v-model="apiKey"
+                  class="mt-2"
+                  label="API Token v2"
                   outlined
                   clearable
                   dense
                 ></v-text-field>
-                <v-text-field
-                  v-model="normalLevelHour"
-                  :rules="[rules.required, rules.number]"
-                  class="pl-2"
-                  label="Hours"
-                  outlined
-                  clearable
-                  dense
-                ></v-text-field>
-              </div>
 
-              <div
-                class="text-h6 mb-2"
-              >
-                Fast Level
-              </div>
-              <div class="subtitle-2">
-                Fastest: 3d 10h 
-              </div>
-              <div class="subtitle-2 mb-2">
-                Levels: {{ FAST_LEVEL.join(', ') }}
-              </div>
-              <div class="d-flex">
-                <v-text-field
-                  v-model="fastLevelDay"
-                  :rules="[rules.required, rules.number]"
-                  class="pr-2"
-                  label="Days"
-                  outlined
-                  clearable
-                  dense
-                ></v-text-field>
-                <v-text-field
-                  v-model="fastLevelHour"
-                  :rules="[rules.required, rules.number]"
-                  class="pl-2"
-                  label="Hours"
-                  outlined
-                  clearable
-                  dense
-                ></v-text-field>
-              </div>
+                <div
+                  class="text-h6 mb-2"
+                >
+                  Normal Level
+                </div>
+                <div class="subtitle-2 mb-2">
+                  Fastest: 6d 20h
+                </div>
+                <div class="d-flex">
+                  <v-text-field
+                    v-model="normalLevelDay"
+                    :rules="[rules.required, rules.number]"
+                    class="pr-2"
+                    label="Days"
+                    outlined
+                    clearable
+                    dense
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="normalLevelHour"
+                    :rules="[rules.required, rules.number]"
+                    class="pl-2"
+                    label="Hours"
+                    outlined
+                    clearable
+                    dense
+                  ></v-text-field>
+                </div>
 
-              <v-btn
-                color="primary"
-                block
-                :disabled="!enableLoad || isLoading"
-                :loading="isLoading"
-                @click="submit()"
-              >
-                Load
-              </v-btn>
+                <div
+                  class="text-h6 mb-2"
+                >
+                  Fast Level
+                </div>
+                <div class="subtitle-2">
+                  Fastest: 3d 10h 
+                </div>
+                <div class="subtitle-2 mb-2">
+                  Levels: {{ FAST_LEVEL.join(', ') }}
+                </div>
+                <div class="d-flex">
+                  <v-text-field
+                    v-model="fastLevelDay"
+                    :rules="[rules.required, rules.number]"
+                    class="pr-2"
+                    label="Days"
+                    outlined
+                    clearable
+                    dense
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="fastLevelHour"
+                    :rules="[rules.required, rules.number]"
+                    class="pl-2"
+                    label="Hours"
+                    outlined
+                    clearable
+                    dense
+                  ></v-text-field>
+                </div>
 
-              <div
-                v-if="errorMessage"
-                class="mt-2 text-center red--text"
-              >
-                {{ errorMessage }}
-              </div>
+                <div class="d-flex">
+                  <v-btn
+                    class="flex-grow-1 flex-shrink-0 mr-2"
+                    color="primary"
+                    :disabled="!enableLoad || isLoading"
+                    :loading="isLoading"
+                    @click="submit()"
+                  >
+                    Load
+                  </v-btn>
+
+                  <v-btn
+                    class="flex-grow-0 flex-shrink-0"
+                    color="error"
+                    :disabled="!enableLoad || isLoading"
+                    @click="reset()"
+                  >
+                    Reset
+                  </v-btn>
+                </div>
+                <div
+                  v-if="errorMessage"
+                  class="mt-2 text-center red--text"
+                >
+                  {{ errorMessage }}
+                </div>
+              </v-form>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -335,17 +347,16 @@ export default {
       return levelProgressions
     },
     getDataFromLocalStorage () {
-      if (localStorage.getItem('wanikani-level-progression')) {
-        try {
-          const result = JSON.parse(localStorage.getItem('wanikani-level-progression'))
-          this.apiKey = result.apiKey
-          this.normalLevelDay = result.normalLevelDay
-          this.normalLevelHour = result.normalLevelHour
-          this.fastLevelDay = result.fastLevelDay
-          this.fastLevelHour = result.fastLevelHour
-        } catch(e) {
-          localStorage.removeItem('wanikani-level-progression')
-        }
+      if (!localStorage.getItem('wanikani-level-progression')) return
+      try {
+        const result = JSON.parse(localStorage.getItem('wanikani-level-progression'))
+        this.apiKey = result.apiKey
+        this.normalLevelDay = result.normalLevelDay
+        this.normalLevelHour = result.normalLevelHour
+        this.fastLevelDay = result.fastLevelDay
+        this.fastLevelHour = result.fastLevelHour
+      } catch(e) {
+        localStorage.removeItem('wanikani-level-progression')
       }
     },
     saveDataToLocalStorage () {
@@ -356,6 +367,10 @@ export default {
       localStorage.setItem('wanikani-level-progression', JSON.stringify({
         apiKey, normalLevelDay, normalLevelHour, fastLevelDay, fastLevelHour
       }))
+    },
+    reset() {
+      this.$refs.form.reset()
+      localStorage.removeItem('wanikani-level-progression')
     },
     initMedian () {
       var times = this.median.levelProgressions
