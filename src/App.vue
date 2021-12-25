@@ -322,7 +322,7 @@ export default {
       let passedAt = new Date(this.modHour(currentLevelProgression.unlockedAt.getTime() + actualSpeed.getTime()))
       const now = new Date()
       if (passedAt < now) {
-        actualSpeed = new Date(now - this.modHour(currentLevelProgression.unlockedAt.getTime()))
+        actualSpeed = new Date(this.modHour(now - currentLevelProgression.unlockedAt.getTime()))
         passedAt = new Date(this.modHour(now))
       }
 
